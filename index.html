@@ -374,11 +374,13 @@
                 </div>
                 <div class="content-wrapper">
                     <div class="content-body flex flex-col h-full">
-                        <div class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll">
+                        <div id="scroll-ar"
+                            class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll h-full max-h-[400px]">
                             <button onclick="copyText('ar')"
                                 class="absolute top-4 left-4 p-2.5 bg-gray-100 dark:bg-slate-800 rounded-xl hover:text-[#059669] hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"
                                 title="Salin Teks"><i data-lucide="copy" class="w-4.5 h-4.5"></i></button>
-                            <div id="outputOriginal" class="arabic-text text-right mt-6 min-h-[120px] opacity-70">Teks
+                            <div id="outputOriginal"
+                                class="arabic-text text-right mt-6 min-h-[120px] opacity-70 relative">Teks
                                 asli akan tampil di sini...</div>
                         </div>
                         <div class="audio-ctrl-group glass-audio">
@@ -393,8 +395,8 @@
                                         data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
                             <div class="flex items-center gap-3">
-                                <div id="loadingAr" class="tts-loading-badge"><span class="spinner-mini"></span> Memuat
-                                    Suara...</div>
+                                <div id="loadingAr" class="tts-loading-badge"><span class="spinner-mini"></span>
+                                    Memuat...</div>
                                 <button onclick="stopSpeech()"
                                     class="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition active:scale-90"><i
                                         data-lucide="square" class="w-5 h-5 fill-current"></i></button>
@@ -422,11 +424,13 @@
                 </div>
                 <div class="content-wrapper">
                     <div class="content-body flex flex-col h-full">
-                        <div class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll">
+                        <div id="scroll-id"
+                            class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll h-full max-h-[400px]">
                             <button onclick="copyText('id')"
                                 class="absolute top-4 right-4 p-2.5 bg-gray-100 dark:bg-slate-800 rounded-xl hover:text-[#059669] hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"
                                 title="Salin Terjemahan"><i data-lucide="copy" class="w-4.5 h-4.5"></i></button>
-                            <div id="outputTranslated" class="indo-text mt-6 min-h-[120px] opacity-70">Terjemahan akan
+                            <div id="outputTranslated" class="indo-text mt-6 min-h-[120px] opacity-70 relative">
+                                Terjemahan akan
                                 tampil di sini...</div>
                         </div>
                         <div class="audio-ctrl-group glass-audio">
@@ -441,8 +445,8 @@
                                         data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
                             <div class="flex items-center gap-3">
-                                <div id="loadingId" class="tts-loading-badge"><span class="spinner-mini"></span> Memuat
-                                    Suara...</div>
+                                <div id="loadingId" class="tts-loading-badge"><span class="spinner-mini"></span>
+                                    Memuat...</div>
                                 <button onclick="stopSpeech()"
                                     class="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition active:scale-90"><i
                                         data-lucide="square" class="w-5 h-5 fill-current"></i></button>
@@ -462,8 +466,8 @@
         </div>
     </main>
 
-    <!-- Reading Mode (Focus) -->
-    <div id="readingOverlay" class="fixed inset-0 bg-[var(--bg-paper)] z-[2000] hidden flex-col">
+    <!-- Reading Mode (Focus) - REVAMPED SIDE BY SIDE -->
+    <div id="readingOverlay" class="fixed inset-0 bg-[var(--bg-body)] z-[2000] hidden flex-col">
         <div class="p-4 bg-[#059669] text-white flex justify-between items-center shrink-0 shadow-md">
             <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="book-open" class="w-5 h-5"></i> Mode
                 Fokus Sastra</h3>
@@ -474,17 +478,37 @@
                     <button onclick="changeFontSize(0.1)"
                         class="px-4 py-1.5 hover:bg-white/20 font-bold transition">A+</button>
                 </div>
-                <button onclick="toggleReadingMode()"
-                    class="p-1.5 bg-black/20 hover:bg-red-500 rounded-full transition"><i data-lucide="x"></i></button>
+                <button onclick="toggleReadingMode()" class="p-1.5 bg-black/20 hover:bg-red-500 rounded-full transition"
+                    title="Tutup Mode Baca"><i data-lucide="x"></i></button>
             </div>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-12 max-w-5xl mx-auto w-full pb-32 custom-scroll">
-            <div id="readAr"
-                class="arabic-text text-right bg-emerald-50/50 dark:bg-slate-800/40 p-6 md:p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 shadow-inner">
+
+        <!-- Content Area: grid-cols-1 (Mobile) md:grid-cols-2 (Desktop) -->
+        <div class="flex-1 overflow-y-auto w-full custom-scroll bg-[var(--bg-body)] relative" id="scroll-read">
+            <div class="max-w-6xl mx-auto p-4 md:p-10 pb-32">
+                <div id="readingContent" class="space-y-8">
+                    <!-- Content rendered here as Responsive Grid -->
+                </div>
             </div>
-            <div id="readId"
-                class="indo-text p-6 md:p-8 border-l-4 border-[#059669] bg-gray-50/50 dark:bg-slate-800/20 rounded-r-3xl">
-            </div>
+        </div>
+
+        <!-- Controls -->
+        <div
+            class="bg-[var(--bg-paper)] border-t border-[var(--spine)] p-4 shrink-0 flex flex-wrap justify-center gap-3">
+            <button onclick="toggleSpeech('ar')"
+                class="px-5 py-2.5 bg-emerald-100 dark:bg-emerald-900/30 text-[#059669] dark:text-emerald-400 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-200 transition">
+                <i data-lucide="play-circle" class="w-5 h-5" id="readPlayIconAr"></i> <span
+                    id="readPlayLabelAr">Arab</span>
+            </button>
+            <button onclick="toggleSpeech('id')"
+                class="px-5 py-2.5 bg-emerald-100 dark:bg-emerald-900/30 text-[#059669] dark:text-emerald-400 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-200 transition">
+                <i data-lucide="play-circle" class="w-5 h-5" id="readPlayIconId"></i> <span
+                    id="readPlayLabelId">Terjemahan</span>
+            </button>
+            <button onclick="stopSpeech()"
+                class="px-5 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl font-bold flex items-center gap-2 hover:bg-red-200 transition">
+                <i data-lucide="square" class="w-5 h-5"></i> Stop
+            </button>
         </div>
     </div>
 
@@ -496,7 +520,7 @@
     <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[3000] backdrop-enter hidden" id="backdrop"
         onclick="closeAllPanels()"></div>
 
-    <!-- Settings Panel (API & TTS) -->
+    <!-- Settings Panel -->
     <div class="fixed top-1/2 left-1/2 modal-enter bg-[var(--bg-paper)] p-6 md:p-8 rounded-3xl shadow-2xl z-[3001] w-[92%] max-w-md hidden custom-scroll max-h-[90vh] overflow-y-auto"
         id="settingsPanel">
         <div class="flex justify-between items-center mb-6">
@@ -507,7 +531,6 @@
         </div>
 
         <div class="space-y-6">
-            <!-- API Key Section -->
             <div>
                 <label class="flex items-center gap-2 text-sm font-bold mb-2 uppercase opacity-70"><i data-lucide="key"
                         class="w-4 h-4"></i> Kunci Akses (API Key)</label>
@@ -515,7 +538,6 @@
                     class="w-full p-3.5 rounded-xl border border-[var(--spine)] bg-gray-50 dark:bg-slate-800/50 outline-none focus:ring-2 focus:ring-[#059669] transition">
             </div>
 
-            <!-- TTS Settings Section -->
             <div class="pt-4 border-t border-[var(--spine)]">
                 <label class="flex items-center gap-2 text-sm font-bold mb-4 uppercase opacity-70"><i data-lucide="mic"
                         class="w-4 h-4"></i> Konfigurasi Suara (TTS)</label>
@@ -617,7 +639,6 @@
             initVoices();
         };
 
-        // --- TTS Voices Initialization ---
         function initVoices() {
             const populate = () => {
                 availableVoices = synth.getVoices();
@@ -626,7 +647,6 @@
                 const arSelect = document.getElementById('voiceArSelect');
                 const idSelect = document.getElementById('voiceIdSelect');
 
-                // Clear existing except first default option
                 arSelect.innerHTML = '<option value="">Default Arab</option>';
                 idSelect.innerHTML = '<option value="">Default Indonesia</option>';
 
@@ -664,7 +684,6 @@
                 await navigator.clipboard.writeText(text);
                 showToast("Teks berhasil disalin!");
             } catch (err) {
-                // Fallback for older browsers
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
                 document.body.appendChild(textArea);
@@ -680,12 +699,13 @@
                 document.getElementById('inputText').value = '';
                 appState.sentences = { ar: [], id: [] };
 
-                ['outputOriginal', 'outputTranslated', 'readAr', 'readId'].forEach(id => {
+                ['outputOriginal', 'outputTranslated'].forEach(id => {
                     document.getElementById(id).innerHTML = '';
                     document.getElementById(id).classList.remove('opacity-100');
                     document.getElementById(id).classList.add('opacity-70');
                 });
 
+                document.getElementById('readingContent').innerHTML = '';
                 stopSpeech();
                 showToast("Kanvas dibersihkan");
             }
@@ -708,8 +728,6 @@
             const panel = document.getElementById(id);
             bd.classList.remove('hidden');
             panel.classList.remove('hidden');
-
-            // Trigger reflow for animation
             void bd.offsetWidth;
             bd.classList.add('backdrop-enter-active');
             panel.classList.add('modal-enter-active');
@@ -718,18 +736,16 @@
         function closeAllPanels() {
             const bd = document.getElementById('backdrop');
             bd.classList.remove('backdrop-enter-active');
-
             ['settingsPanel', 'historyPanel', 'errorPopup'].forEach(id => {
                 const panel = document.getElementById(id);
                 panel.classList.remove('modal-enter-active');
             });
-
             setTimeout(() => {
                 bd.classList.add('hidden');
                 ['settingsPanel', 'historyPanel', 'errorPopup'].forEach(id => {
                     document.getElementById(id).classList.add('hidden');
                 });
-            }, 300); // match transition duration
+            }, 300);
         }
 
         function toggleCollapse(id) {
@@ -742,9 +758,16 @@
         function toggleReadingMode() {
             const ov = document.getElementById('readingOverlay');
             ov.classList.toggle('hidden');
+            ov.classList.toggle('flex');
+
             if (!ov.classList.contains('hidden')) {
-                fontScale = 1.0;
-                document.documentElement.style.setProperty('--font-scale', fontScale);
+                if (synth.speaking && activeLang) {
+                    setTimeout(() => syncHighlight(activeLang, currentSpeakingCharIndex), 100);
+                }
+            } else {
+                if (synth.speaking && activeLang) {
+                    setTimeout(() => syncHighlight(activeLang, currentSpeakingCharIndex), 100);
+                }
             }
         }
 
@@ -753,16 +776,12 @@
             appState.pitch = parseFloat(document.getElementById('pitchSlider').value);
             appState.voiceArURI = document.getElementById('voiceArSelect').value;
             appState.voiceIdURI = document.getElementById('voiceIdSelect').value;
-
             localStorage.setItem('access_key', appState.key);
             localStorage.setItem('tts_pitch', appState.pitch);
             localStorage.setItem('tts_voice_ar', appState.voiceArURI);
             localStorage.setItem('tts_voice_id', appState.voiceIdURI);
-
             closeAllPanels();
             showToast("Konfigurasi tersimpan!");
-
-            // Reload voices instantly if speaking
             if (synth.speaking) stopSpeech();
         }
 
@@ -776,7 +795,7 @@
 
             const btn = document.getElementById('translateBtn');
             btn.disabled = true;
-            btn.innerHTML = `<span class="animate-pulse flex items-center gap-2"><span class="spinner-mini"></span> Memproses AI...</span>`;
+            btn.innerHTML = `<span class="animate-pulse flex items-center gap-2"><span class="spinner-mini"></span> Memproses...</span>`;
 
             const sys = `Terjemahkan teks berikut ke Bahasa Indonesia secara lengkap, secara menyeluruh.
             Aturan output:
@@ -795,22 +814,16 @@
                     body: JSON.stringify({ contents: [{ parts: [{ text: `${sys}\n\nNASKAH:\n${text}` }] }] })
                 });
                 const data = await response.json();
-
                 if (data.error) throw new Error(data.error.message);
 
                 const result = data.candidates[0].content.parts[0].text;
                 processOutput(text, result);
                 saveToHistory(text, result);
 
-                // Auto collapse
-                const editor = document.getElementById('editorSection');
-                if (!editor.classList.contains('is-collapsed')) toggleCollapse('editorSection');
+                if (!document.getElementById('editorSection').classList.contains('is-collapsed')) toggleCollapse('editorSection');
+                if (document.getElementById('translatedSection').classList.contains('is-collapsed')) toggleCollapse('translatedSection');
 
-                // Ensure output is expanded
-                const translated = document.getElementById('translatedSection');
-                if (translated.classList.contains('is-collapsed')) toggleCollapse('translatedSection');
-
-                showToast("Terjemahan sukses!");
+                showToast("Terjemahan selesai!");
             } catch (e) {
                 document.getElementById('errorMsg').innerText = e.message;
                 openPanel('errorPopup');
@@ -821,28 +834,47 @@
             }
         }
 
-        function renderContent(containerId, data, langType) {
+        function renderContent(containerId, data, langType, prefix) {
             const el = document.getElementById(containerId);
             if (!data.length) {
                 el.innerHTML = langType === 'ar' ? 'Naskah asli...' : 'Terjemahan...';
-                el.classList.remove('opacity-100');
                 el.classList.add('opacity-70');
-                el.classList.remove('fade-in-text');
                 return;
             }
-
-            const html = data.map((val, idx) =>
-                `<span class="sentence" id="s-${langType}-${idx}">${val}</span>`
-            ).join("");
-
+            const html = data.map((val, idx) => `<span class="sentence" id="${prefix}-${langType}-${idx}">${val}</span>`).join("");
             el.innerHTML = html;
             el.classList.remove('opacity-70');
             el.classList.add('opacity-100');
-
-            // Re-trigger animation
-            el.classList.remove('fade-in-text');
-            void el.offsetWidth;
             el.classList.add('fade-in-text');
+        }
+
+        function renderReadingMode() {
+            const container = document.getElementById('readingContent');
+            if (!appState.sentences.ar.length && !appState.sentences.id.length) {
+                container.innerHTML = '<div class="text-center opacity-50 py-10">Belum ada teks untuk ditampilkan.</div>';
+                return;
+            }
+
+            const maxLength = Math.max(appState.sentences.ar.length, appState.sentences.id.length);
+            let html = '';
+
+            for (let i = 0; i < maxLength; i++) {
+                const arText = appState.sentences.ar[i] || '';
+                const idText = appState.sentences.id[i] || '';
+
+                // Side by Side on Desktop (Grid), Stack on Mobile
+                html += `
+                <div class="reading-card grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-10 items-start bg-[var(--bg-paper)] rounded-3xl border border-[var(--spine)] shadow-sm hover:shadow-md transition-all overflow-hidden">
+                    <div class="arabic-text text-right p-6 md:p-10 bg-emerald-50/30 dark:bg-emerald-900/10 md:border-r border-[var(--spine)]" dir="rtl">
+                        <span class="sentence" id="read-ar-${i}">${arText}</span>
+                    </div>
+                    <div class="indo-text text-left p-6 md:p-10">
+                        <span class="sentence" id="read-id-${i}">${idText}</span>
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = html;
         }
 
         function processOutput(ar, id) {
@@ -855,17 +887,14 @@
                 if (cur) res.push(cur);
                 return res;
             };
-
             appState.sentences.ar = segmentText(ar);
             appState.sentences.id = segmentText(id);
-
-            renderContent('outputOriginal', appState.sentences.ar, 'ar');
-            renderContent('outputTranslated', appState.sentences.id, 'id');
-            renderContent('readAr', appState.sentences.ar, 'ar');
-            renderContent('readId', appState.sentences.id, 'id');
+            renderContent('outputOriginal', appState.sentences.ar, 'ar', 'main');
+            renderContent('outputTranslated', appState.sentences.id, 'id', 'main');
+            renderReadingMode();
         }
 
-        // --- PREMIUM TTS ENGINE ---
+        let currentSpeakingCharIndex = 0;
         function toggleSpeech(lang) {
             if (synth.paused && activeLang === lang) {
                 synth.resume();
@@ -876,63 +905,43 @@
                 stopSpeech();
                 return;
             }
-
             stopSpeech();
             activeLang = lang;
+            currentSpeakingCharIndex = 0;
             const fullText = appState.sentences[lang].join("");
-            if (!fullText) return showToast("Tidak ada teks!");
+            if (!fullText) return;
 
-            // Tampilkan Indikator Loading
             document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'flex';
-            document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.add('opacity-50');
+            const readLabel = document.getElementById(`readPlayLabel${lang === 'ar' ? 'Ar' : 'Id'}`);
+            if (readLabel) readLabel.innerText = "Memuat...";
 
             synth.cancel();
-
             const utterance = new SpeechSynthesisUtterance(fullText);
-
-            // Set Language fallback
             utterance.lang = lang === 'ar' ? 'ar-SA' : 'id-ID';
 
-            // Apply Custom Voice if selected
             const targetURI = lang === 'ar' ? appState.voiceArURI : appState.voiceIdURI;
-            if (targetURI && availableVoices.length > 0) {
-                const selectedVoice = availableVoices.find(v => v.voiceURI === targetURI);
-                if (selectedVoice) utterance.voice = selectedVoice;
+            if (targetURI) {
+                const voice = availableVoices.find(v => v.voiceURI === targetURI);
+                if (voice) utterance.voice = voice;
             }
 
-            // Apply Pitch & Rate
             utterance.rate = lang === 'ar' ? appState.rateAr : appState.rateId;
             utterance.pitch = appState.pitch;
 
             utterance.onboundary = (e) => {
                 if (e.name === 'word' || e.name === 'sentence') {
+                    currentSpeakingCharIndex = e.charIndex;
                     syncHighlight(lang, e.charIndex);
                 }
             };
-
             utterance.onstart = () => {
-                // Sembunyikan Loading
                 document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'none';
-                document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.remove('opacity-50');
                 updatePlayIcons(lang, true);
             };
-
             utterance.onend = () => stopSpeech();
             utterance.onerror = () => stopSpeech();
 
-            // Mobile Hack
-            setTimeout(() => {
-                synth.speak(utterance);
-
-                // Fallback for missing onstart event in some mobiles
-                setTimeout(() => {
-                    if (synth.speaking) {
-                        document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'none';
-                        document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.remove('opacity-50');
-                        updatePlayIcons(lang, true);
-                    }
-                }, 500);
-            }, 100);
+            setTimeout(() => synth.speak(utterance), 50);
         }
 
         function syncHighlight(lang, charIndex) {
@@ -940,42 +949,49 @@
             const sens = appState.sentences[lang];
             for (let i = 0; i < sens.length; i++) {
                 total += sens[i].length;
-                if (charIndex < total) {
-                    targetIdx = i;
-                    break;
-                }
+                if (charIndex < total) { targetIdx = i; break; }
             }
-
             document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight-active'));
-            const activeEls = document.querySelectorAll(`[id$="-${targetIdx}"]`);
-            activeEls.forEach(el => el.classList.add('highlight-active'));
 
-            if (activeEls[0]) {
-                activeEls[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const isReadingMode = !document.getElementById('readingOverlay').classList.contains('hidden');
+            if (isReadingMode) {
+                const elRead = document.getElementById(`read-${lang}-${targetIdx}`);
+                if (elRead) {
+                    elRead.classList.add('highlight-active');
+                    const scrollContainer = document.getElementById('scroll-read');
+                    const card = elRead.closest('.reading-card');
+                    if (card) {
+                        scrollContainer.scrollTo({
+                            top: card.offsetTop - (scrollContainer.clientHeight / 2) + (card.clientHeight / 2),
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            } else {
+                const elMain = document.getElementById(`main-${lang}-${targetIdx}`);
+                if (elMain) {
+                    elMain.classList.add('highlight-active');
+                    const scrollContainer = document.getElementById(`scroll-${lang}`);
+                    if (scrollContainer) {
+                        scrollContainer.scrollTo({
+                            top: elMain.offsetTop - (scrollContainer.clientHeight / 2),
+                            behavior: 'smooth'
+                        });
+                    }
+                }
             }
         }
 
         function pauseSpeech() {
             if (synth.speaking) {
-                if (synth.paused) {
-                    synth.resume();
-                    updatePlayIcons(activeLang, true);
-                } else {
-                    synth.pause();
-                    updatePlayIcons(activeLang, false);
-                }
+                if (synth.paused) { synth.resume(); updatePlayIcons(activeLang, true); }
+                else { synth.pause(); updatePlayIcons(activeLang, false); }
             }
         }
 
         function stopSpeech() {
             synth.cancel();
             document.querySelectorAll('.tts-loading-badge').forEach(el => el.style.display = 'none');
-
-            const btnAr = document.getElementById('playIconAr');
-            const btnId = document.getElementById('playIconId');
-            if (btnAr) btnAr.parentElement.classList.remove('opacity-50');
-            if (btnId) btnId.parentElement.classList.remove('opacity-50');
-
             updatePlayIcons('ar', false);
             updatePlayIcons('id', false);
             document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight-active'));
@@ -987,11 +1003,7 @@
             appState[key] = Math.min(2.0, Math.max(0.5, appState[key] + delta));
             document.getElementById(`speedDisplay${lang === 'ar' ? 'Ar' : 'Id'}`).innerText = appState[key].toFixed(1) + 'x';
             localStorage.setItem(`tts_rate_${lang}`, appState[key]);
-
-            if (synth.speaking && activeLang === lang) {
-                stopSpeech();
-                toggleSpeech(lang);
-            }
+            if (synth.speaking && activeLang === lang) { stopSpeech(); toggleSpeech(lang); }
         }
 
         function updatePlayIcons(lang, isPlaying) {
@@ -1000,27 +1012,29 @@
             const label = document.getElementById(`playLabel${suffix}`);
             if (icon) icon.setAttribute('data-lucide', isPlaying ? 'square' : 'play');
             if (label) label.innerText = isPlaying ? 'Stop' : 'Dengar';
+
+            const readIcon = document.getElementById(`readPlayIcon${suffix}`);
+            const readLabel = document.getElementById(`readPlayLabel${suffix}`);
+            if (readIcon) readIcon.setAttribute('data-lucide', isPlaying ? 'square' : 'play-circle');
+            if (readLabel) readLabel.innerText = isPlaying ? 'Stop' : (lang === 'ar' ? 'Arab' : 'Indo');
             lucide.createIcons();
         }
 
-        // --- HISTORY ---
         function renderHistory() {
             const list = document.getElementById('historyList');
             if (appState.history.length === 0) {
-                list.innerHTML = `<div class="text-center opacity-50 py-10"><i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2"></i><p class="text-sm font-semibold">Belum ada riwayat.</p></div>`;
-                lucide.createIcons();
+                list.innerHTML = `<div class="text-center opacity-50 py-10"><p class="text-sm">Kosong</p></div>`;
                 return;
             }
             list.innerHTML = appState.history.map((item, i) => `
-                <div onclick="loadHistory(${i})" class="p-4 bg-gray-50 dark:bg-slate-800 border border-[var(--spine)] rounded-2xl cursor-pointer hover:border-[#059669] hover:shadow-md active:scale-[0.98] transition-all">
-                    <p class="arabic-text text-[13px] line-clamp-1 opacity-90 mb-1.5" dir="rtl">${item.ar}</p>
-                    <p class="text-[11px] line-clamp-2 italic opacity-80">${item.id}</p>
+                <div onclick="loadHistory(${i})" class="p-4 bg-gray-50 dark:bg-slate-800 border border-[var(--spine)] rounded-2xl cursor-pointer hover:border-[#059669] transition-all">
+                    <p class="arabic-text text-[13px] line-clamp-1 opacity-90" dir="rtl">${item.ar}</p>
+                    <p class="text-[11px] line-clamp-1 italic opacity-60">${item.id}</p>
                 </div>
             `).join("");
         }
 
         function saveToHistory(ar, id) {
-            if (appState.history.length > 0 && appState.history[0].ar === ar) return;
             appState.history.unshift({ ar, id });
             if (appState.history.length > 20) appState.history.pop();
             localStorage.setItem('trans_history', JSON.stringify(appState.history));
@@ -1032,15 +1046,11 @@
             document.getElementById('inputText').value = item.ar;
             processOutput(item.ar, item.id);
             closeAllPanels();
-
-            const editor = document.getElementById('editorSection');
-            if (!editor.classList.contains('is-collapsed')) toggleCollapse('editorSection');
-
-            showToast("Naskah dimuat dari riwayat");
+            if (!document.getElementById('editorSection').classList.contains('is-collapsed')) toggleCollapse('editorSection');
         }
 
         function clearHistory() {
-            if (confirm("Hapus seluruh riwayat permanen?")) {
+            if (confirm("Hapus riwayat?")) {
                 appState.history = [];
                 localStorage.removeItem('trans_history');
                 renderHistory();
