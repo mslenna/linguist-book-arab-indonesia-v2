@@ -291,13 +291,14 @@
 
 <body class="light">
 
-    <!-- Header -->
     <header class="glass-header text-white p-4 sticky top-0 z-[100]">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div onclick="location.reload()" class="cursor-pointer group">
                 <h1 class="font-semibold text-lg leading-none tracking-tight group-hover:text-emerald-100 transition">
                     LinguistBook Pro</h1>
-                <small class="opacity-80 font-medium">v3.5 Premium</small>
+                <small class="opacity-80 font-medium">Arab -> Indonesia Oleh <a href="https://sobari.vercel.app"
+                        target="_blank" onclick="event.stopPropagation()"
+                        class="underline hover:text-white transition">Muhamad Sobari</a></small>
             </div>
             <div class="flex gap-1.5">
                 <button
@@ -324,7 +325,6 @@
     </header>
 
     <main class="max-w-5xl mx-auto p-4 md:p-6 pb-24">
-        <!-- Editor Section -->
         <section class="collapse-container" id="editorSection">
             <div class="card-header group" onclick="toggleCollapse('editorSection')">
                 <span
@@ -362,9 +362,7 @@
             </div>
         </section>
 
-        <!-- Output Sections -->
         <div class="space-y-5">
-            <!-- Arabic Section -->
             <section class="collapse-container" id="originalSection">
                 <div class="card-header group" onclick="toggleCollapse('originalSection')">
                     <span class="font-semibold flex items-center gap-2 text-lg"><i data-lucide="file-text"
@@ -414,7 +412,6 @@
                 </div>
             </section>
 
-            <!-- Indonesian Section -->
             <section class="collapse-container" id="translatedSection">
                 <div class="card-header group" onclick="toggleCollapse('translatedSection')">
                     <span class="font-semibold flex items-center gap-2 text-lg"><i data-lucide="languages"
@@ -466,7 +463,6 @@
         </div>
     </main>
 
-    <!-- Reading Mode (Focus) - REVAMPED SIDE BY SIDE -->
     <div id="readingOverlay" class="fixed inset-0 bg-[var(--bg-body)] z-[2000] hidden flex-col">
         <div class="p-4 bg-[#059669] text-white flex justify-between items-center shrink-0 shadow-md">
             <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="book-open" class="w-5 h-5"></i> Mode
@@ -483,16 +479,13 @@
             </div>
         </div>
 
-        <!-- Content Area: grid-cols-1 (Mobile) md:grid-cols-2 (Desktop) -->
         <div class="flex-1 overflow-y-auto w-full custom-scroll bg-[var(--bg-body)] relative" id="scroll-read">
             <div class="max-w-6xl mx-auto p-4 md:p-10 pb-32">
                 <div id="readingContent" class="space-y-8">
-                    <!-- Content rendered here as Responsive Grid -->
                 </div>
             </div>
         </div>
 
-        <!-- Controls -->
         <div
             class="bg-[var(--bg-paper)] border-t border-[var(--spine)] p-4 shrink-0 flex flex-wrap justify-center gap-3">
             <button onclick="toggleSpeech('ar')"
@@ -512,7 +505,6 @@
         </div>
     </div>
 
-    <!-- UI Overlays & Toasts -->
     <div id="toast"
         class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 rounded-full text-sm font-semibold opacity-0 pointer-events-none transition-all duration-300 z-[9999] shadow-2xl translate-y-4">
     </div>
@@ -520,7 +512,6 @@
     <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[3000] backdrop-enter hidden" id="backdrop"
         onclick="closeAllPanels()"></div>
 
-    <!-- Settings Panel -->
     <div class="fixed top-1/2 left-1/2 modal-enter bg-[var(--bg-paper)] p-6 md:p-8 rounded-3xl shadow-2xl z-[3001] w-[92%] max-w-md hidden custom-scroll max-h-[90vh] overflow-y-auto"
         id="settingsPanel">
         <div class="flex justify-between items-center mb-6">
@@ -575,7 +566,6 @@
             onclick="saveSettings()">Simpan Konfigurasi</button>
     </div>
 
-    <!-- History Panel -->
     <div class="fixed top-1/2 left-1/2 modal-enter bg-[var(--bg-paper)] p-6 md:p-8 rounded-3xl shadow-2xl z-[3001] w-[92%] max-w-lg hidden flex flex-col max-h-[85vh]"
         id="historyPanel">
         <div class="flex justify-between items-center mb-6">
@@ -587,7 +577,6 @@
         <div id="historyList" class="overflow-y-auto flex-1 space-y-3 pr-2 custom-scroll"></div>
     </div>
 
-    <!-- Error Popup -->
     <div id="errorPopup"
         class="fixed top-1/2 left-1/2 modal-enter bg-white dark:bg-slate-800 rounded-3xl shadow-2xl z-[5000] w-[90%] max-w-md hidden overflow-hidden border border-red-500">
         <div class="bg-red-500 text-white p-5 font-bold flex justify-between items-center">
@@ -650,11 +639,35 @@
                 arSelect.innerHTML = '<option value="">Default Arab</option>';
                 idSelect.innerHTML = '<option value="">Default Indonesia</option>';
 
+                let maleArVoice = null;
+                let maleIdVoice = null;
+
                 availableVoices.forEach(v => {
                     const option = `<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`;
-                    if (v.lang.includes('ar')) arSelect.insertAdjacentHTML('beforeend', option);
-                    if (v.lang.includes('id')) idSelect.insertAdjacentHTML('beforeend', option);
+
+                    if (v.lang.includes('ar')) {
+                        arSelect.insertAdjacentHTML('beforeend', option);
+                        // Deteksi suara pria Arab
+                        if (!maleArVoice && /male|tarik|maged|ahmad|baha/i.test(v.name)) {
+                            maleArVoice = v;
+                        }
+                    }
+                    if (v.lang.includes('id')) {
+                        idSelect.insertAdjacentHTML('beforeend', option);
+                        // Deteksi suara pria Indonesia
+                        if (!maleIdVoice && /male|andika|budi|bagas/i.test(v.name)) {
+                            maleIdVoice = v;
+                        }
+                    }
                 });
+
+                // Auto-set suara pria jika belum ada konfigurasi tersimpan
+                if (!appState.voiceArURI && maleArVoice) {
+                    appState.voiceArURI = maleArVoice.voiceURI;
+                }
+                if (!appState.voiceIdURI && maleIdVoice) {
+                    appState.voiceIdURI = maleIdVoice.voiceURI;
+                }
 
                 if (appState.voiceArURI) arSelect.value = appState.voiceArURI;
                 if (appState.voiceIdURI) idSelect.value = appState.voiceIdURI;
