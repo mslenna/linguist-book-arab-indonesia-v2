@@ -20,7 +20,7 @@
             --bg-paper: #ffffff;
             --text-main: #1f2937;
             --spine: #e5e7eb;
-            --highlight: rgba(5, 150, 105, 0.15);
+            --highlight: rgba(5, 150, 105, 0.2);
         }
 
         .dark-mode {
@@ -28,7 +28,7 @@
             --bg-paper: #1e293b;
             --text-main: #f8fafc;
             --spine: #334155;
-            --highlight: rgba(5, 150, 105, 0.3);
+            --highlight: rgba(5, 150, 105, 0.4);
         }
 
         body {
@@ -48,7 +48,7 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            max-height: 2000px;
+            max-height: 5000px;
         }
 
         .is-collapsed {
@@ -73,46 +73,44 @@
             border-bottom-color: transparent;
         }
 
-        .collapse-content {
-            padding: 20px;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        .is-collapsed .collapse-content {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .chevron-icon {
-            transition: transform 0.3s ease;
-            width: 18px;
-            height: 18px;
-            opacity: 0.5;
-        }
-
-        .is-collapsed .chevron-icon {
-            transform: rotate(-90deg);
-        }
-
         .arabic-text {
             font-family: 'Amiri', serif;
             font-size: 1.6rem;
             direction: rtl;
             line-height: 2.2;
+            white-space: pre-wrap;
+            /* Menjamin baris baru dirender */
+            word-wrap: break-word;
         }
 
         .indo-text {
             font-family: 'Crimson Pro', serif;
             font-size: 1.3rem;
             line-height: 1.8;
+            white-space: pre-wrap;
+            /* Menjamin baris baru dirender */
+            word-wrap: break-word;
+        }
+
+        .sentence {
+            display: inline;
+            /* Tetap inline agar mengalir seperti teks biasa */
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .indo-text {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            /* Menjaga \n dari output AI */
         }
 
         .sentence {
             border-radius: 4px;
             transition: 0.2s;
-            padding: 0 4px;
-            cursor: pointer;
+            padding: 0 2px;
         }
 
         .highlight-active {
@@ -144,21 +142,6 @@
             overflow-y: auto;
         }
 
-        @media (max-width: 768px) {
-            .reading-split {
-                flex-direction: column;
-            }
-
-            .reading-pane {
-                padding: 1.5rem;
-            }
-
-            .reading-pane:first-child {
-                border-right: none;
-                border-bottom: 1px solid var(--spine);
-            }
-        }
-
         .error-popup {
             position: fixed;
             top: 50%;
@@ -180,24 +163,6 @@
             color: #f8fafc;
         }
 
-        .error-header {
-            background: #ef4444;
-            color: white;
-            padding: 12px 20px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .error-body {
-            padding: 20px;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            font-family: monospace;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-
         .audio-ctrl-group {
             display: flex;
             flex-direction: column;
@@ -209,15 +174,10 @@
             border: 1px solid var(--spine);
             margin-top: 1rem;
         }
-
-        .dark-mode .audio-ctrl-group {
-            background: rgba(255, 255, 255, 0.03);
-        }
     </style>
 </head>
 
 <body class="light-mode">
-
     <header class="bg-[#059669] text-white p-4 sticky top-0 z-[100] shadow-md">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div>
@@ -226,14 +186,14 @@
                         class="underline">Muhamad Sobari</a></small>
             </div>
             <div class="flex gap-2">
-                <button class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all"
-                    onclick="toggleDarkMode()"><i data-lucide="moon" id="themeIcon"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all"
-                    onclick="openPanel('historyPanel')"><i data-lucide="history"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all"
-                    onclick="toggleReadingMode()"><i data-lucide="book-open"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all"
-                    onclick="openPanel('settingsPanel')"><i data-lucide="key"></i></button>
+                <button class="p-2 bg-white/20 rounded-lg" onclick="toggleDarkMode()"><i data-lucide="moon"
+                        id="themeIcon"></i></button>
+                <button class="p-2 bg-white/20 rounded-lg" onclick="openPanel('historyPanel')"><i
+                        data-lucide="history"></i></button>
+                <button class="p-2 bg-white/20 rounded-lg" onclick="toggleReadingMode()"><i
+                        data-lucide="book-open"></i></button>
+                <button class="p-2 bg-white/20 rounded-lg" onclick="openPanel('settingsPanel')"><i
+                        data-lucide="key"></i></button>
             </div>
         </div>
     </header>
@@ -242,16 +202,16 @@
         <section class="collapse-container" id="editorSection">
             <div class="card-header" onclick="toggleCollapse('editorSection')">
                 <span class="text-xs font-bold uppercase tracking-wider opacity-60">Input Naskah Arab</span>
-                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                <i data-lucide="chevron-down"></i>
             </div>
-            <div class="collapse-content">
+            <div class="p-5">
                 <textarea id="inputText"
                     class="w-full h-32 bg-transparent arabic-text border-none focus:ring-0 resize-none outline-none"
                     placeholder="Tulis atau tempel teks Arab di sini..."></textarea>
                 <div class="flex justify-between items-center mt-4 pt-3 border-t border-[var(--spine)]">
-                    <span id="statusLabel" class="text-[10px] opacity-50 italic">Layanan Inti: Siap</span>
+                    <span class="text-[10px] opacity-50 italic">Layanan Inti: Siap</span>
                     <button id="translateBtn" onclick="handleTranslate()"
-                        class="bg-[#059669] text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all">
+                        class="bg-[#059669] text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857]">
                         <i data-lucide="sparkles"></i> Terjemahkan
                     </button>
                 </div>
@@ -263,24 +223,23 @@
             <section class="collapse-container" id="originalSection">
                 <div class="card-header" onclick="toggleCollapse('originalSection')">
                     <span class="font-semibold">Matan (Asli)</span>
-                    <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    <i data-lucide="chevron-down"></i>
                 </div>
-                <div class="collapse-content">
-                    <div id="outputOriginal" class="arabic-text text-right mb-6">Naskah asli akan muncul di sini...
-                    </div>
+                <div class="p-5">
+                    <div id="outputOriginal" class="arabic-text text-right mb-6"></div>
                     <div class="audio-ctrl-group">
                         <div class="flex items-center gap-5">
                             <button onclick="adjustRate('ar', -0.1)"
-                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:text-[#059669]"><i
+                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm"><i
                                     data-lucide="chevrons-left"></i></button>
                             <span id="speedDisplayAr" class="font-mono font-bold text-[#059669]">1.0x</span>
                             <button onclick="adjustRate('ar', 0.1)"
-                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:text-[#059669]"><i
+                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm"><i
                                     data-lucide="chevrons-right"></i></button>
                         </div>
                         <div class="flex items-center gap-3">
                             <button onclick="stopSpeech()"
-                                class="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i
+                                class="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center"><i
                                     data-lucide="square" class="w-4"></i></button>
                             <button onclick="toggleSpeech('ar')"
                                 class="px-6 py-2 bg-[#059669] text-white rounded-full font-bold flex items-center gap-2 shadow-lg"><i
@@ -298,23 +257,23 @@
             <section class="collapse-container" id="translatedSection">
                 <div class="card-header" onclick="toggleCollapse('translatedSection')">
                     <span class="font-semibold">Terjemahan Sastra</span>
-                    <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    <i data-lucide="chevron-down"></i>
                 </div>
-                <div class="collapse-content">
-                    <div id="outputTranslated" class="indo-text mb-6">Hasil terjemahan akan muncul di sini...</div>
+                <div class="p-5">
+                    <div id="outputTranslated" class="indo-text mb-6"></div>
                     <div class="audio-ctrl-group">
                         <div class="flex items-center gap-5">
                             <button onclick="adjustRate('id', -0.1)"
-                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:text-[#059669]"><i
+                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm"><i
                                     data-lucide="chevrons-left"></i></button>
                             <span id="speedDisplayId" class="font-mono font-bold text-[#059669]">1.0x</span>
                             <button onclick="adjustRate('id', 0.1)"
-                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:text-[#059669]"><i
+                                class="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm"><i
                                     data-lucide="chevrons-right"></i></button>
                         </div>
                         <div class="flex items-center gap-3">
                             <button onclick="stopSpeech()"
-                                class="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i
+                                class="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center"><i
                                     data-lucide="square" class="w-4"></i></button>
                             <button onclick="toggleSpeech('id')"
                                 class="px-6 py-2 bg-[#059669] text-white rounded-full font-bold flex items-center gap-2 shadow-lg"><i
@@ -330,6 +289,17 @@
         </div>
     </main>
 
+    <div id="errorPopup" class="error-popup">
+        <div class="error-header bg-red-600 p-3 text-white font-bold flex justify-between">
+            <span>PERINGATAN SISTEM</span>
+            <button onclick="closeErrorPopup()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="p-5 font-mono text-sm" id="errorMsg"></div>
+        <div class="p-4 bg-gray-50 flex justify-end">
+            <button class="bg-red-600 text-white px-5 py-2 rounded-lg" onclick="closeErrorPopup()">TUTUP</button>
+        </div>
+    </div>
+
     <div id="readingOverlay">
         <div class="p-4 border-b border-[var(--spine)] flex justify-between items-center bg-[#059669] text-white">
             <h3 class="font-bold">Mode Fokus Sastra</h3>
@@ -342,43 +312,23 @@
         </div>
     </div>
 
-    <!-- Error Popup Modal (Global Error Handler) -->
-    <div id="errorPopup" class="error-popup">
-        <div class="error-header">
-            <span class="flex items-center gap-2"><i data-lucide="alert-triangle" class="w-5"></i> PERINGATAN
-                SISTEM</span>
-            <button onclick="closeErrorPopup()"><i data-lucide="x" class="w-5"></i></button>
-        </div>
-        <div class="error-body" id="errorMsg"></div>
-        <div class="p-4 bg-gray-100 dark:bg-black/20 flex justify-end">
-            <button
-                class="bg-[#ef4444] text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md active:scale-95 transition-all"
-                onclick="closeErrorPopup()">TUTUP</button>
-        </div>
-    </div>
-
     <div class="fixed inset-0 bg-black/50 z-[3000] hidden backdrop-blur-sm" id="backdrop" onclick="closeAllPanels()">
     </div>
 
-    <!-- Settings Panel -->
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-paper)] p-8 rounded-2xl shadow-2xl z-[3001] w-[90%] max-w-md hidden"
         id="settingsPanel">
-        <h3 class="text-xl font-bold mb-2">Konfigurasi Layanan</h3>
-        <p class="text-xs opacity-60 mb-4 italic">Masukkan kunci API untuk mulai menerjemahkan naskah sastra.</p>
+        <h3 class="text-xl font-bold mb-4">Konfigurasi Layanan</h3>
         <input type="password" id="apiKeyInput" placeholder="Kunci Akses..."
-            class="w-full p-3 rounded-xl border border-[var(--spine)] bg-transparent mb-4 outline-none focus:border-[#059669]">
+            class="w-full p-3 rounded-xl border border-[var(--spine)] bg-transparent mb-4 outline-none">
         <button class="w-full bg-[#059669] text-white p-3 rounded-xl font-bold" onclick="saveSettings()">Simpan Kunci
             API Key Google AI</button>
     </div>
 
-    <!-- History Panel -->
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-paper)] p-6 rounded-2xl shadow-2xl z-[3001] w-[95%] max-w-lg hidden flex flex-col max-h-[80vh]"
         id="historyPanel">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Riwayat Terjemahan</h3>
-        </div>
+        <h3 class="text-xl font-bold mb-4">Riwayat Terjemahan</h3>
         <div id="historyList" class="overflow-y-auto flex-1 space-y-3"></div>
-        <button class="w-full bg-[#059669] text-white p-3 rounded-xl font-bold mt-4"
+        <button class="w-full bg-gray-200 dark:bg-slate-700 p-3 rounded-xl font-bold mt-4"
             onclick="closeAllPanels()">Tutup</button>
     </div>
 
@@ -411,8 +361,7 @@
 
         function closeAllPanels() {
             document.getElementById('backdrop').classList.add('hidden');
-            document.getElementById('settingsPanel').classList.add('hidden');
-            document.getElementById('historyPanel').classList.add('hidden');
+            document.querySelectorAll('[id$="Panel"]').forEach(p => p.classList.add('hidden'));
         }
 
         function toggleCollapse(id) {
@@ -446,14 +395,14 @@
             btn.disabled = true;
             btn.innerHTML = `<span class="animate-pulse">Menghubungkan...</span>`;
 
-            const sys = `Terjemahkan teks berikut ke Bahasa Indonesia secara lengkap, secara menyeluruh.
+            // PERBAIKAN PROMPT: Mengizinkan baris baru secara eksplisit
+            const sys = `Terjemahkan teks berikut ke Bahasa Indonesia secara sastra dan lengkap.
 Aturan output:
-- Hanya gunakan huruf, spasi dan enter
-- Hindari semua simbol dan tanda baca kecuali (.,'-:«»/[])
-- Jangan gunakan markdown atau formatting apapun
-- Jika pada Naskah terdapat \n (enter) maka implementasikan juga pada teks terjemah 
-- Jangan tambahkan penjelasan apapun
-Output hanya teks final.`;
+- Jaga struktur baris baru (newline/enter) sesuai aslinya.
+- Hanya gunakan huruf, spasi, dan baris baru.
+- Simbol yang diizinkan hanya (.,'-:«»/[]).
+- Jangan gunakan markdown (** atau #).
+- Jangan tambahkan penjelasan. Output langsung teks hasil terjemahan.`;
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${appState.key}`;
 
@@ -467,23 +416,13 @@ Output hanya teks final.`;
                 });
 
                 const data = await response.json();
-
-                // DYNAMIC ERROR HANDLING PER REQUEST
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-
-                if (!data.candidates || data.candidates.length === 0) {
-                    throw new Error("Tidak ada respon yang diterima dari layanan. Silakan cek teks atau kuota Anda.");
-                }
+                if (data.error) throw new Error(data.error.message);
 
                 const result = data.candidates[0].content.parts[0].text;
                 processOutput(text, result);
                 saveToHistory(text, result);
                 document.getElementById('editorSection').classList.add('is-collapsed');
-
             } catch (e) {
-                // REDIRECT ALL ERRORS TO THE CUSTOM POPUP
                 showErrorPopup(e.message);
             } finally {
                 btn.disabled = false;
@@ -503,21 +442,42 @@ Output hanya teks final.`;
             document.getElementById('backdrop').classList.add('hidden');
         }
 
+        function processOutput(ar, id) {
+            // Menggunakan capturing group dalam split agar pemisahnya (titik/newline) TIDAK hilang
+            const splitRegex = /([.!?\n]+)/;
+
+            const segmentText = (text) => {
+                const parts = text.split(splitRegex);
+                const result = [];
+                for (let i = 0; i < parts.length; i += 2) {
+                    // Gabungkan teks dengan pemisahnya (misal: "Kalimat" + ".")
+                    const chunk = parts[i] + (parts[i + 1] || "");
+                    if (chunk.length > 0) result.push(chunk);
+                }
+                return result;
+            };
+
+            appState.sentences.ar = segmentText(ar);
+            appState.sentences.id = segmentText(id);
+
+            const render = (container, data, type) => {
+                // Gunakan template literal tanpa spasi tambahan antar span agar tidak merusak formatting asli
+                container.innerHTML = data.map((v, i) => `<span class="sentence" id="s-${type}-${i}">${v}</span>`).join("");
+            };
+
+            render(document.getElementById('outputOriginal'), appState.sentences.ar, 'ar');
+            render(document.getElementById('outputTranslated'), appState.sentences.id, 'id');
+            render(document.getElementById('readAr'), appState.sentences.ar, 'ar');
+            render(document.getElementById('readId'), appState.sentences.id, 'id');
+        }
+
         function toggleSpeech(lang) {
-            if (synth.paused && activeLang === lang) {
-                synth.resume();
-                updatePlayIcons(lang, true);
-                return;
-            }
-            if (synth.speaking && activeLang === lang) {
-                synth.cancel();
-                updatePlayIcons(lang, false);
-                return;
-            }
+            if (synth.paused && activeLang === lang) { synth.resume(); updatePlayIcons(lang, true); return; }
+            if (synth.speaking && activeLang === lang) { synth.cancel(); updatePlayIcons(lang, false); return; }
 
             synth.cancel();
             activeLang = lang;
-            const text = appState.sentences[lang].join(" ");
+            const text = appState.sentences[lang].join("");
             if (!text) return;
 
             const utterance = new SpeechSynthesisUtterance(text);
@@ -529,11 +489,7 @@ Output hanya teks final.`;
             };
 
             utterance.onstart = () => updatePlayIcons(lang, true);
-            utterance.onend = () => {
-                updatePlayIcons(lang, false);
-                clearFocus();
-                activeLang = null;
-            };
+            utterance.onend = () => { updatePlayIcons(lang, false); clearFocus(); activeLang = null; };
 
             synth.speak(utterance);
         }
@@ -566,26 +522,12 @@ Output hanya teks final.`;
             }
         }
 
-        function processOutput(ar, id) {
-            appState.sentences.ar = ar.split(/[.!?\r\n]+/).filter(s => s.trim().length > 0);
-            appState.sentences.id = id.split(/[.!?\r\n]+/).filter(s => s.trim().length > 0);
-
-            const render = (container, data, type) => {
-                container.innerHTML = data.map((v, i) => `<span class="sentence" id="s-${type}-${i}">${v}. </span>`).join("");
-            };
-
-            render(document.getElementById('outputOriginal'), appState.sentences.ar, 'ar');
-            render(document.getElementById('outputTranslated'), appState.sentences.id, 'id');
-            render(document.getElementById('readAr'), appState.sentences.ar, 'ar');
-            render(document.getElementById('readId'), appState.sentences.id, 'id');
-        }
-
         function syncFocusByChar(lang, charIdx) {
             let total = 0;
             let idx = 0;
             const data = appState.sentences[lang];
             for (let i = 0; i < data.length; i++) {
-                total += data[i].length + 1;
+                total += data[i].length;
                 if (charIdx < total) { idx = i; break; }
             }
             clearFocus();
@@ -605,8 +547,8 @@ Output hanya teks final.`;
             const suffix = lang === 'ar' ? 'Ar' : 'Id';
             const icon = document.getElementById(`playIcon${suffix}`);
             const label = document.getElementById(`playLabel${suffix}`);
-            icon.setAttribute('data-lucide', isPlaying ? 'square' : 'play');
-            label.innerText = isPlaying ? 'Berhenti' : 'Dengar';
+            icon.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+            label.innerText = isPlaying ? 'Jeda' : 'Dengar';
             lucide.createIcons();
         }
 
