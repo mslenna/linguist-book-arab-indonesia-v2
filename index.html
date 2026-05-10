@@ -8,7 +8,7 @@
     <title>LinguistBook Pro - Sastra Arab-Indo</title>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&family=Amiri:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,260 +16,445 @@
     <style>
         :root {
             --primary: #059669;
-            --bg-body: #f3f4f6;
+            --bg-body: #f8fafc;
             --bg-paper: #ffffff;
-            --text-main: #1f2937;
-            --spine: #e5e7eb;
-            --highlight: rgba(5, 150, 105, 0.15);
+            --text-main: #0f172a;
+            --spine: #e2e8f0;
+            --highlight: rgba(5, 150, 105, 0.2);
+            --font-scale: 1;
         }
 
-        .dark-mode {
+        .dark {
             --bg-body: #0f172a;
             --bg-paper: #1e293b;
             --text-main: #f8fafc;
             --spine: #334155;
-            --highlight: rgba(5, 150, 105, 0.3);
+            --highlight: rgba(16, 185, 129, 0.35);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-body);
             color: var(--text-main);
-            transition: 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
             margin: 0;
-            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* Glassmorphism Utilities */
+        .glass-header {
+            background: rgba(5, 150, 105, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-audio {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .glass-audio {
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        /* Smooth Collapse System */
         .collapse-container {
             background: var(--bg-paper);
             border: 1px solid var(--spine);
-            border-radius: 12px;
-            margin-bottom: 1rem;
+            border-radius: 20px;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            max-height: 2000px;
-            /* Lebar saat terbuka */
         }
 
-        .is-collapsed {
-            max-height: 52px;
-            /* Hanya setinggi header */
-            border-color: transparent;
-            box-shadow: none;
+        .collapse-container:hover {
+            box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.06);
+        }
+
+        .dark .collapse-container {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .is-collapsed .content-wrapper {
+            grid-template-rows: 0fr;
+        }
+
+        .content-body {
+            min-height: 0;
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .is-collapsed .content-body {
+            opacity: 0;
         }
 
         .card-header {
-            padding: 14px 20px;
+            padding: 18px 24px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: transparent;
             user-select: none;
-            background: var(--bg-paper);
+            border-bottom: 1px solid var(--spine);
+            transition: background-color 0.2s;
         }
 
-        .collapse-content {
-            padding: 20px;
-            opacity: 1;
-            transition: opacity 0.3s ease;
+        .card-header:active {
+            background: rgba(0, 0, 0, 0.02);
         }
 
-        .is-collapsed .collapse-content {
-            opacity: 0;
-            pointer-events: none;
+        .dark .card-header:active {
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .chevron-icon {
-            transition: transform 0.3s ease;
-            width: 18px;
-            height: 18px;
-            opacity: 0.5;
+        .is-collapsed .card-header {
+            border-bottom-color: transparent;
         }
 
-        .is-collapsed .chevron-icon {
-            transform: rotate(-90deg);
-        }
-
+        /* Typography & Animation */
         .arabic-text {
             font-family: 'Amiri', serif;
-            font-size: 1.6rem;
+            font-size: calc(1.7rem * var(--font-scale));
             direction: rtl;
             line-height: 2.2;
+            white-space: pre-wrap;
+            transition: font-size 0.3s ease;
         }
 
         .indo-text {
             font-family: 'Crimson Pro', serif;
-            font-size: 1.3rem;
+            font-size: calc(1.35rem * var(--font-scale));
             line-height: 1.8;
+            white-space: pre-wrap;
+            transition: font-size 0.3s ease;
+        }
+
+        .fade-in-text {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .sentence {
-            border-radius: 4px;
-            transition: 0.2s;
-            padding: 0 4px;
-            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            display: inline;
         }
 
         .highlight-active {
             background: var(--highlight);
-            box-shadow: 0 0 0 2px var(--highlight);
+            box-shadow: 0 0 0 3px var(--highlight);
         }
 
-        #readingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-paper);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .reading-split {
-            flex: 1;
+        .audio-ctrl-group {
             display: flex;
-            overflow: hidden;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--spine);
+            width: 100%;
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
         }
 
-        .reading-pane {
-            flex: 1;
-            padding: 2.5rem;
-            overflow-y: auto;
+        /* TTS Indicator Loading */
+        .tts-loading-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: rgba(5, 150, 105, 0.1);
+            color: #059669;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            animation: pulseBg 1.5s infinite;
+        }
+
+        .dark .tts-loading-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        @keyframes pulseBg {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .spinner-mini {
+            width: 12px;
+            height: 12px;
+            border: 2px solid currentColor;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Custom Scrollbar for Panels */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--spine);
+            border-radius: 10px;
+        }
+
+        /* Panels Transition */
+        .modal-enter {
+            opacity: 0;
+            transform: translate(-50%, -45%) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-enter-active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .backdrop-enter {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .backdrop-enter-active {
+            opacity: 1;
         }
 
         @media (max-width: 768px) {
-            .reading-split {
-                flex-direction: column;
+            .arabic-text {
+                font-size: calc(1.45rem * var(--font-scale));
             }
 
-            .reading-pane {
-                padding: 1.5rem;
+            .indo-text {
+                font-size: calc(1.2rem * var(--font-scale));
             }
 
-            .reading-pane:first-child {
-                border-right: none;
-                border-bottom: 1px solid var(--spine);
+            .audio-ctrl-group {
+                padding: 0.75rem 1rem;
             }
-        }
 
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            z-index: 9999;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 90%;
-        }
-
-        .btn-audio {
-            @apply p-3 rounded-full transition-all active:scale-95 flex items-center justify-center;
+            .card-header {
+                padding: 16px 20px;
+            }
         }
     </style>
 </head>
 
-<body class="light-mode">
+<body class="light">
 
-    <header class="bg-[#059669] text-white p-4 sticky top-0 z-[100] shadow-md">
+    <!-- Header -->
+    <header class="glass-header text-white p-4 sticky top-0 z-[100]">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="font-semibold text-lg leading-none">LinguistBook Pro</h1>
-                <small class="opacity-80">Linguist Engine v3 • Oleh Muhamad Sobari</small>
+            <div onclick="location.reload()" class="cursor-pointer group">
+                <h1 class="font-semibold text-lg leading-none tracking-tight group-hover:text-emerald-100 transition">
+                    LinguistBook Pro</h1>
+                <small class="opacity-80 font-medium">v3.5 Premium</small>
             </div>
-            <div class="flex gap-2">
-                <button class="p-2 bg-white/20 rounded-lg" onclick="toggleDarkMode()" title="Tema"><i data-lucide="moon"
-                        id="themeIcon"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg" onclick="openPanel('historyPanel')" title="Riwayat"><i
-                        data-lucide="history"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg" onclick="toggleReadingMode()" title="Mode Baca"><i
-                        data-lucide="book-open"></i></button>
-                <button class="p-2 bg-white/20 rounded-lg" onclick="openPanel('settingsPanel')" title="Kunci Akses"><i
-                        data-lucide="key"></i></button>
+            <div class="flex gap-1.5">
+                <button
+                    class="p-2.5 bg-white/10 hover:bg-white/25 rounded-xl backdrop-blur-sm transition-all active:scale-95"
+                    onclick="toggleDarkMode()" title="Mode Gelap"><i data-lucide="moon" id="themeIcon"
+                        class="w-5 h-5"></i></button>
+                <button
+                    class="p-2.5 bg-white/10 hover:bg-white/25 rounded-xl backdrop-blur-sm transition-all active:scale-95"
+                    onclick="clearAll()" title="Bersihkan Kanvas"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                <button
+                    class="p-2.5 bg-white/10 hover:bg-white/25 rounded-xl backdrop-blur-sm transition-all active:scale-95"
+                    onclick="openPanel('historyPanel')" title="Riwayat"><i data-lucide="history"
+                        class="w-5 h-5"></i></button>
+                <button
+                    class="p-2.5 bg-white/10 hover:bg-white/25 rounded-xl backdrop-blur-sm transition-all active:scale-95"
+                    onclick="toggleReadingMode()" title="Mode Baca"><i data-lucide="book-open"
+                        class="w-5 h-5"></i></button>
+                <button
+                    class="p-2.5 bg-white/10 hover:bg-white/25 rounded-xl backdrop-blur-sm transition-all active:scale-95"
+                    onclick="openPanel('settingsPanel')" title="Pengaturan AI & TTS"><i data-lucide="settings"
+                        class="w-5 h-5"></i></button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto p-4">
+    <main class="max-w-5xl mx-auto p-4 md:p-6 pb-24">
+        <!-- Editor Section -->
         <section class="collapse-container" id="editorSection">
-            <div class="card-header" onclick="toggleCollapse('editorSection')">
-                <span class="text-xs font-bold uppercase tracking-wider opacity-60">Input Naskah Arab</span>
-                <i data-lucide="chevron-down" class="chevron-icon"></i>
+            <div class="card-header group" onclick="toggleCollapse('editorSection')">
+                <span
+                    class="text-[11px] font-bold uppercase tracking-wider opacity-60 flex items-center gap-2 group-hover:opacity-100 transition"><i
+                        data-lucide="pen-tool" class="w-4"></i> Input Naskah Sastra</span>
+                <i data-lucide="chevron-down"
+                    class="w-5 h-5 transition-transform duration-300 opacity-50 group-hover:opacity-100"
+                    id="icon-editorSection"></i>
             </div>
-            <div class="collapse-content">
-                <textarea id="inputText"
-                    class="w-full h-32 bg-transparent arabic-text border-none focus:ring-0 resize-none outline-none"
-                    placeholder="Tulis teks Arab di sini..."></textarea>
-                <div class="flex justify-between items-center mt-4 pt-3 border-t border-[var(--spine)]">
-                    <span id="statusLabel" class="text-[10px] opacity-50 italic">Layanan Inti: Siap</span>
-                    <button id="translateBtn" onclick="handleTranslate()"
-                        class="bg-[#059669] text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all disabled:opacity-50">
-                        <i data-lucide="sparkles"></i> Terjemahkan
-                    </button>
+            <div class="content-wrapper">
+                <div class="content-body">
+                    <div class="p-5 md:p-6">
+                        <textarea id="inputText"
+                            class="w-full h-40 bg-transparent arabic-text border border-[var(--spine)] rounded-xl p-4 focus:ring-2 focus:ring-[#059669] outline-none transition-shadow custom-scroll"
+                            placeholder="Ketik atau tempel teks naskah Arab di sini..."></textarea>
+
+                        <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                            <div class="space-y-1.5">
+                                <label class="text-[11px] font-bold opacity-60 uppercase tracking-wide">Pilih Mesin AI
+                                    (Model)</label>
+                                <select id="modelSelect"
+                                    class="w-full p-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-sm outline-none border border-[var(--spine)] focus:border-[#059669] transition cursor-pointer">
+                                    <option value="gemini-3-flash-preview">Gemini 3 Flash (Terbaru & Cepat)</option>
+                                    <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash (Sangat Cepat)</option>
+                                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Akurasi Tinggi)</option>
+                                </select>
+                            </div>
+                            <button id="translateBtn" onclick="handleTranslate()"
+                                class="bg-[#059669] hover:bg-[#047857] text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-emerald-900/20">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i> Terjemahkan Naskah
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <div class="grid md:grid-cols-2 gap-4">
+        <!-- Output Sections -->
+        <div class="space-y-5">
+            <!-- Arabic Section -->
             <section class="collapse-container" id="originalSection">
-                <div class="card-header" onclick="toggleCollapse('originalSection')">
-                    <span class="font-semibold">Matan (Asli)</span>
-                    <i data-lucide="chevron-down" class="chevron-icon"></i>
+                <div class="card-header group" onclick="toggleCollapse('originalSection')">
+                    <span class="font-semibold flex items-center gap-2 text-lg"><i data-lucide="file-text"
+                            class="w-5 text-[#059669]"></i> Matan (Asli)</span>
+                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 opacity-50"
+                        id="icon-originalSection"></i>
                 </div>
-                <div class="collapse-content arabic-text text-right" id="outputOriginal">
-                    Naskah asli akan muncul di sini...
+                <div class="content-wrapper">
+                    <div class="content-body flex flex-col h-full">
+                        <div class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll">
+                            <button onclick="copyText('ar')"
+                                class="absolute top-4 left-4 p-2.5 bg-gray-100 dark:bg-slate-800 rounded-xl hover:text-[#059669] hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"
+                                title="Salin Teks"><i data-lucide="copy" class="w-4.5 h-4.5"></i></button>
+                            <div id="outputOriginal" class="arabic-text text-right mt-6 min-h-[120px] opacity-70">Teks
+                                asli akan tampil di sini...</div>
+                        </div>
+                        <div class="audio-ctrl-group glass-audio">
+                            <div class="flex items-center gap-1.5 md:gap-3">
+                                <button onclick="adjustRate('ar', -0.1)"
+                                    class="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"><i
+                                        data-lucide="minus" class="w-4 h-4"></i></button>
+                                <span id="speedDisplayAr"
+                                    class="text-sm font-mono font-bold w-9 text-center text-[#059669]">1.0x</span>
+                                <button onclick="adjustRate('ar', 0.1)"
+                                    class="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"><i
+                                        data-lucide="plus" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div id="loadingAr" class="tts-loading-badge"><span class="spinner-mini"></span> Memuat
+                                    Suara...</div>
+                                <button onclick="stopSpeech()"
+                                    class="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition active:scale-90"><i
+                                        data-lucide="square" class="w-5 h-5 fill-current"></i></button>
+                                <button onclick="toggleSpeech('ar')"
+                                    class="px-5 py-2.5 bg-[#059669] hover:bg-[#047857] text-white rounded-full text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-900/20 active:scale-95 transition-all">
+                                    <i data-lucide="play" class="w-4 h-4 fill-current" id="playIconAr"></i> <span
+                                        id="playLabelAr">Dengar</span>
+                                </button>
+                                <button onclick="pauseSpeech()"
+                                    class="p-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg shadow-amber-900/20 active:scale-90 transition-all"><i
+                                        data-lucide="pause" class="w-4 h-4 fill-current"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Indonesian Section -->
             <section class="collapse-container" id="translatedSection">
-                <div class="card-header" onclick="toggleCollapse('translatedSection')">
-                    <span class="font-semibold">Terjemahan Sastra</span>
-                    <div class="flex gap-3">
-                        <button onclick="event.stopPropagation(); openPanel('audioPanel')"
-                            class="opacity-50 hover:opacity-100 transition-opacity"><i data-lucide="sliders"
-                                class="w-4"></i></button>
-                        <i data-lucide="chevron-down" class="chevron-icon"></i>
-                    </div>
+                <div class="card-header group" onclick="toggleCollapse('translatedSection')">
+                    <span class="font-semibold flex items-center gap-2 text-lg"><i data-lucide="languages"
+                            class="w-5 text-[#059669]"></i> Terjemahan Sastra</span>
+                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300 opacity-50"
+                        id="icon-translatedSection"></i>
                 </div>
-                <div class="collapse-content">
-                    <div id="outputTranslated" class="indo-text mb-6">Hasil terjemahan akan muncul di sini...</div>
-
-                    <div
-                        class="flex flex-col items-center gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-[var(--spine)]">
-                        <!-- Kecepatan -->
-                        <div class="flex items-center gap-4">
-                            <button onclick="adjustRate(-0.1)" class="p-2 hover:text-[#059669] transition-colors"><i
-                                    data-lucide="chevrons-left" class="w-5"></i></button>
-                            <span id="speedDisplay"
-                                class="font-mono font-bold text-sm min-w-[50px] text-center bg-white dark:bg-slate-800 px-3 py-1 rounded-full shadow-sm">1.0x</span>
-                            <button onclick="adjustRate(0.1)" class="p-2 hover:text-[#059669] transition-colors"><i
-                                    data-lucide="chevrons-right" class="w-5"></i></button>
+                <div class="content-wrapper">
+                    <div class="content-body flex flex-col h-full">
+                        <div class="p-5 md:p-8 flex-1 overflow-y-auto relative custom-scroll">
+                            <button onclick="copyText('id')"
+                                class="absolute top-4 right-4 p-2.5 bg-gray-100 dark:bg-slate-800 rounded-xl hover:text-[#059669] hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"
+                                title="Salin Terjemahan"><i data-lucide="copy" class="w-4.5 h-4.5"></i></button>
+                            <div id="outputTranslated" class="indo-text mt-6 min-h-[120px] opacity-70">Terjemahan akan
+                                tampil di sini...</div>
                         </div>
-
-                        <!-- Control Buttons -->
-                        <div class="flex items-center gap-3">
-                            <button id="stopBtn" onclick="stopSpeech()"
-                                class="w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all">
-                                <i data-lucide="square" class="w-5"></i>
-                            </button>
-
-                            <button id="playBtn" onclick="toggleSpeech()"
-                                class="px-8 py-3 bg-[#059669] text-white rounded-full font-bold flex items-center gap-2 shadow-lg hover:scale-105 transition-all">
-                                <i data-lucide="play" id="playIcon"></i> <span id="playLabel">Dengarkan</span>
-                            </button>
-
-                            <button id="pauseBtn" onclick="pauseSpeech()"
-                                class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-amber-600 transition-all">
-                                <i data-lucide="pause" id="pauseIcon"></i>
-                            </button>
+                        <div class="audio-ctrl-group glass-audio">
+                            <div class="flex items-center gap-1.5 md:gap-3">
+                                <button onclick="adjustRate('id', -0.1)"
+                                    class="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"><i
+                                        data-lucide="minus" class="w-4 h-4"></i></button>
+                                <span id="speedDisplayId"
+                                    class="text-sm font-mono font-bold w-9 text-center text-[#059669]">1.0x</span>
+                                <button onclick="adjustRate('id', 0.1)"
+                                    class="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition active:scale-90"><i
+                                        data-lucide="plus" class="w-4 h-4"></i></button>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div id="loadingId" class="tts-loading-badge"><span class="spinner-mini"></span> Memuat
+                                    Suara...</div>
+                                <button onclick="stopSpeech()"
+                                    class="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition active:scale-90"><i
+                                        data-lucide="square" class="w-5 h-5 fill-current"></i></button>
+                                <button onclick="toggleSpeech('id')"
+                                    class="px-5 py-2.5 bg-[#059669] hover:bg-[#047857] text-white rounded-full text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-900/20 active:scale-95 transition-all">
+                                    <i data-lucide="play" class="w-4 h-4 fill-current" id="playIconId"></i> <span
+                                        id="playLabelId">Dengar</span>
+                                </button>
+                                <button onclick="pauseSpeech()"
+                                    class="p-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-lg shadow-amber-900/20 active:scale-90 transition-all"><i
+                                        data-lucide="pause" class="w-4 h-4 fill-current"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -277,182 +462,321 @@
         </div>
     </main>
 
-    <div id="readingOverlay">
-        <div class="p-4 border-b border-[var(--spine)] flex justify-between items-center bg-[#059669] text-white">
-            <h3 class="font-bold">Mode Fokus Sastra</h3>
-            <button class="p-2 bg-white/20 rounded-full" onclick="toggleReadingMode()"><i data-lucide="x"></i></button>
-        </div>
-        <div class="reading-split">
-            <div class="reading-pane border-r border-[var(--spine)] bg-black/5 arabic-text text-right" id="readAr">
+    <!-- Reading Mode (Focus) -->
+    <div id="readingOverlay" class="fixed inset-0 bg-[var(--bg-paper)] z-[2000] hidden flex-col">
+        <div class="p-4 bg-[#059669] text-white flex justify-between items-center shrink-0 shadow-md">
+            <h3 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="book-open" class="w-5 h-5"></i> Mode
+                Fokus Sastra</h3>
+            <div class="flex items-center gap-5">
+                <div class="flex bg-black/20 rounded-xl overflow-hidden backdrop-blur-sm">
+                    <button onclick="changeFontSize(-0.1)"
+                        class="px-4 py-1.5 hover:bg-white/20 border-r border-white/10 font-bold transition">A-</button>
+                    <button onclick="changeFontSize(0.1)"
+                        class="px-4 py-1.5 hover:bg-white/20 font-bold transition">A+</button>
+                </div>
+                <button onclick="toggleReadingMode()"
+                    class="p-1.5 bg-black/20 hover:bg-red-500 rounded-full transition"><i data-lucide="x"></i></button>
             </div>
-            <div class="reading-pane indo-text" id="readId"></div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-12 max-w-5xl mx-auto w-full pb-32 custom-scroll">
+            <div id="readAr"
+                class="arabic-text text-right bg-emerald-50/50 dark:bg-slate-800/40 p-6 md:p-8 rounded-3xl border border-emerald-100 dark:border-slate-700 shadow-inner">
+            </div>
+            <div id="readId"
+                class="indo-text p-6 md:p-8 border-l-4 border-[#059669] bg-gray-50/50 dark:bg-slate-800/20 rounded-r-3xl">
+            </div>
         </div>
     </div>
 
-    <div class="fixed inset-0 bg-black/50 z-[3000] hidden backdrop-blur-sm" id="backdrop" onclick="closeAllPanels()">
+    <!-- UI Overlays & Toasts -->
+    <div id="toast"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 rounded-full text-sm font-semibold opacity-0 pointer-events-none transition-all duration-300 z-[9999] shadow-2xl translate-y-4">
     </div>
 
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-paper)] p-6 rounded-2xl shadow-2xl z-[3001] w-[95%] max-w-lg hidden flex flex-col max-h-[80vh]"
-        id="historyPanel">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Riwayat Terjemahan</h3>
-            <button onclick="clearHistory()" class="text-xs text-red-500 hover:underline">Hapus Semua</button>
-        </div>
-        <div id="historyList" class="overflow-y-auto flex-1 space-y-3 pr-2"></div>
-        <button class="w-full bg-[#059669] text-white p-3 rounded-xl font-bold mt-4"
-            onclick="closeAllPanels()">Tutup</button>
-    </div>
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[3000] backdrop-enter hidden" id="backdrop"
+        onclick="closeAllPanels()"></div>
 
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-paper)] p-8 rounded-2xl shadow-2xl z-[3001] w-[90%] max-w-md hidden"
+    <!-- Settings Panel (API & TTS) -->
+    <div class="fixed top-1/2 left-1/2 modal-enter bg-[var(--bg-paper)] p-6 md:p-8 rounded-3xl shadow-2xl z-[3001] w-[92%] max-w-md hidden custom-scroll max-h-[90vh] overflow-y-auto"
         id="settingsPanel">
-        <h3 class="text-xl font-bold mb-2">Konfigurasi Layanan</h3>
-        <p class="text-xs opacity-60 mb-6">Masukkan kunci akses pribadi untuk menghubungkan ke Linguist Engine.</p>
-        <input type="password" id="apiKeyInput" placeholder="Kunci Akses..."
-            class="w-full p-3 rounded-xl border border-[var(--spine)] bg-transparent mb-4 outline-none focus:border-[#059669]">
-        <button class="w-full bg-[#059669] text-white p-3 rounded-xl font-bold" onclick="saveSettings()">Simpan
-            Kunci</button>
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-[#059669]">Pengaturan</h3>
+            <button onclick="closeAllPanels()"
+                class="p-2 bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:text-red-500 transition"><i
+                    data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="space-y-6">
+            <!-- API Key Section -->
+            <div>
+                <label class="flex items-center gap-2 text-sm font-bold mb-2 uppercase opacity-70"><i data-lucide="key"
+                        class="w-4 h-4"></i> Kunci Akses (API Key)</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..."
+                    class="w-full p-3.5 rounded-xl border border-[var(--spine)] bg-gray-50 dark:bg-slate-800/50 outline-none focus:ring-2 focus:ring-[#059669] transition">
+            </div>
+
+            <!-- TTS Settings Section -->
+            <div class="pt-4 border-t border-[var(--spine)]">
+                <label class="flex items-center gap-2 text-sm font-bold mb-4 uppercase opacity-70"><i data-lucide="mic"
+                        class="w-4 h-4"></i> Konfigurasi Suara (TTS)</label>
+
+                <div class="space-y-4">
+                    <div>
+                        <span class="text-xs font-semibold mb-1 block">Suara Arab</span>
+                        <select id="voiceArSelect"
+                            class="w-full p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl text-sm border border-[var(--spine)] outline-none focus:ring-2 focus:ring-[#059669]">
+                            <option value="">Default Arab</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold mb-1 block">Suara Indonesia</span>
+                        <select id="voiceIdSelect"
+                            class="w-full p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl text-sm border border-[var(--spine)] outline-none focus:ring-2 focus:ring-[#059669]">
+                            <option value="">Default Indonesia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span>Pitch (Nada Suara)</span>
+                            <span id="pitchValue" class="text-[#059669]">1.0</span>
+                        </div>
+                        <input type="range" id="pitchSlider" min="0.5" max="2.0" step="0.1" value="1.0"
+                            class="w-full accent-[#059669]"
+                            oninput="document.getElementById('pitchValue').innerText = this.value">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button
+            class="w-full mt-8 bg-[#059669] hover:bg-[#047857] text-white p-4 rounded-xl font-bold active:scale-95 transition-all shadow-lg"
+            onclick="saveSettings()">Simpan Konfigurasi</button>
     </div>
 
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-paper)] p-8 rounded-2xl shadow-2xl z-[3001] w-[90%] max-w-md hidden"
-        id="audioPanel">
-        <h3 class="text-xl font-bold mb-4">Pengaturan Suara</h3>
-        <label class="block text-sm mb-1">Nada (Pitch): <span id="vPitch">0.5</span></label>
-        <input type="range" id="pitch" min="0.1" max="1.5" step="0.1" value="0.5" class="w-full mb-6 accent-[#059669]">
-        <label class="block text-sm mb-1">Kecepatan: <span id="vRate">1.0</span></label>
-        <input type="range" id="rate" min="0.5" max="2.5" step="0.1" value="1.0" class="w-full mb-6 accent-[#059669]">
-        <button class="w-full bg-[#059669] text-white p-3 rounded-xl font-bold" onclick="closeAllPanels()">Selesai &
-            Simpan</button>
+    <!-- History Panel -->
+    <div class="fixed top-1/2 left-1/2 modal-enter bg-[var(--bg-paper)] p-6 md:p-8 rounded-3xl shadow-2xl z-[3001] w-[92%] max-w-lg hidden flex flex-col max-h-[85vh]"
+        id="historyPanel">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold flex items-center gap-2"><i data-lucide="history"></i> Riwayat</h3>
+            <button onclick="clearHistory()"
+                class="text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition font-bold flex items-center gap-1"><i
+                    data-lucide="trash" class="w-3 h-3"></i> Bersihkan</button>
+        </div>
+        <div id="historyList" class="overflow-y-auto flex-1 space-y-3 pr-2 custom-scroll"></div>
+    </div>
+
+    <!-- Error Popup -->
+    <div id="errorPopup"
+        class="fixed top-1/2 left-1/2 modal-enter bg-white dark:bg-slate-800 rounded-3xl shadow-2xl z-[5000] w-[90%] max-w-md hidden overflow-hidden border border-red-500">
+        <div class="bg-red-500 text-white p-5 font-bold flex justify-between items-center">
+            <span class="flex items-center gap-2"><i data-lucide="alert-triangle"></i> Peringatan Sistem</span>
+        </div>
+        <div class="p-6 text-sm font-mono text-gray-700 dark:text-gray-300 max-h-64 overflow-y-auto" id="errorMsg">
+        </div>
+        <div class="p-4 bg-gray-50 dark:bg-slate-900 flex justify-end">
+            <button
+                class="bg-gray-200 dark:bg-slate-700 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-300 dark:hover:bg-slate-600 transition"
+                onclick="closeErrorPopup()">Tutup</button>
+        </div>
     </div>
 
     <script>
         lucide.createIcons();
         const synth = window.speechSynthesis;
-        let speechUtterance = null;
+        let activeLang = null;
+        let fontScale = 1.0;
+        let availableVoices = [];
 
         let appState = {
             isDark: localStorage.getItem('dark_mode') === 'true',
             key: localStorage.getItem('access_key') || '',
-            pitch: parseFloat(localStorage.getItem('tts_pitch')) || 0.5,
-            rate: parseFloat(localStorage.getItem('tts_rate')) || 1.0,
+            model: localStorage.getItem('gemini_model') || 'gemini-3-flash-preview',
+            rateAr: parseFloat(localStorage.getItem('tts_rate_ar')) || 1.0,
+            rateId: parseFloat(localStorage.getItem('tts_rate_id')) || 1.0,
+            pitch: parseFloat(localStorage.getItem('tts_pitch')) || 1.0,
+            voiceArURI: localStorage.getItem('tts_voice_ar') || '',
+            voiceIdURI: localStorage.getItem('tts_voice_id') || '',
             history: JSON.parse(localStorage.getItem('trans_history')) || [],
             sentences: { ar: [], id: [] }
         };
 
         window.onload = () => {
-            if (appState.isDark) document.body.classList.add('dark-mode');
-            document.getElementById('pitch').value = appState.pitch;
-            document.getElementById('rate').value = appState.rate;
-            document.getElementById('vPitch').innerText = appState.pitch;
-            document.getElementById('vRate').innerText = appState.rate.toFixed(1);
-            document.getElementById('speedDisplay').innerText = appState.rate.toFixed(1) + 'x';
+            if (appState.isDark) document.body.classList.add('dark');
+            document.getElementById('speedDisplayAr').innerText = appState.rateAr.toFixed(1) + 'x';
+            document.getElementById('speedDisplayId').innerText = appState.rateId.toFixed(1) + 'x';
             document.getElementById('apiKeyInput').value = appState.key;
+            document.getElementById('pitchSlider').value = appState.pitch;
+            document.getElementById('pitchValue').innerText = appState.pitch;
+
+            const modelSelect = document.getElementById('modelSelect');
+            if (Array.from(modelSelect.options).some(opt => opt.value === appState.model)) {
+                modelSelect.value = appState.model;
+            }
+
             renderHistory();
+            initVoices();
         };
 
-        function openPanel(id) {
-            document.getElementById('backdrop').classList.remove('hidden');
-            document.getElementById(id).classList.remove('hidden');
-        }
+        // --- TTS Voices Initialization ---
+        function initVoices() {
+            const populate = () => {
+                availableVoices = synth.getVoices();
+                if (availableVoices.length === 0) return;
 
-        function closeAllPanels() {
-            appState.pitch = parseFloat(document.getElementById('pitch').value);
-            appState.rate = parseFloat(document.getElementById('rate').value);
-            localStorage.setItem('tts_pitch', appState.pitch);
-            localStorage.setItem('tts_rate', appState.rate);
-            document.getElementById('speedDisplay').innerText = appState.rate.toFixed(1) + 'x';
+                const arSelect = document.getElementById('voiceArSelect');
+                const idSelect = document.getElementById('voiceIdSelect');
 
-            document.getElementById('backdrop').classList.add('hidden');
-            document.querySelectorAll('[id$="Panel"]').forEach(p => p.classList.add('hidden'));
-        }
+                // Clear existing except first default option
+                arSelect.innerHTML = '<option value="">Default Arab</option>';
+                idSelect.innerHTML = '<option value="">Default Indonesia</option>';
 
-        function toggleCollapse(id) {
-            document.getElementById(id).classList.toggle('is-collapsed');
-        }
+                availableVoices.forEach(v => {
+                    const option = `<option value="${v.voiceURI}">${v.name} (${v.lang})</option>`;
+                    if (v.lang.includes('ar')) arSelect.insertAdjacentHTML('beforeend', option);
+                    if (v.lang.includes('id')) idSelect.insertAdjacentHTML('beforeend', option);
+                });
 
-        function toggleSpeech() {
-            if (synth.paused) {
-                synth.resume();
-                updatePlayIcons(true);
-                return;
-            }
-
-            if (synth.speaking) {
-                stopSpeech();
-                return;
-            }
-
-            if (appState.sentences.id.length === 0) return;
-
-            const text = appState.sentences.id.join(". ");
-            speechUtterance = new SpeechSynthesisUtterance(text);
-            speechUtterance.lang = 'id-ID';
-            speechUtterance.pitch = appState.pitch;
-            speechUtterance.rate = appState.rate;
-
-            speechUtterance.onboundary = (e) => {
-                if (e.name === 'sentence' || e.name === 'word') syncFocusByChar(e.charIndex);
+                if (appState.voiceArURI) arSelect.value = appState.voiceArURI;
+                if (appState.voiceIdURI) idSelect.value = appState.voiceIdURI;
             };
 
-            speechUtterance.onstart = () => updatePlayIcons(true);
-            speechUtterance.onend = () => { updatePlayIcons(false); clearFocus(); };
-
-            synth.speak(speechUtterance);
-        }
-
-        function pauseSpeech() {
-            if (synth.speaking && !synth.paused) {
-                synth.pause();
-                updatePlayIcons(false);
-            } else if (synth.paused) {
-                synth.resume();
-                updatePlayIcons(true);
+            populate();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populate;
             }
         }
 
-        function stopSpeech() {
-            synth.cancel();
-            updatePlayIcons(false);
-            clearFocus();
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 1rem)';
+            }, 3000);
         }
 
-        function updatePlayIcons(isPlaying) {
-            const icon = document.getElementById('playIcon');
-            const label = document.getElementById('playLabel');
-            const pauseIcon = document.getElementById('pauseIcon');
+        async function copyText(lang) {
+            const text = appState.sentences[lang].join(" ").trim();
+            if (!text) return showToast("Tidak ada teks untuk disalin");
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast("Teks berhasil disalin!");
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("Copy");
+                textArea.remove();
+                showToast("Teks berhasil disalin!");
+            }
+        }
 
-            icon.setAttribute('data-lucide', isPlaying ? 'square' : 'play');
-            label.innerText = isPlaying ? 'Berhenti' : 'Dengarkan';
-            pauseIcon.setAttribute('data-lucide', synth.paused ? 'play' : 'pause');
+        function clearAll() {
+            if (confirm("Bersihkan seluruh kanvas?")) {
+                document.getElementById('inputText').value = '';
+                appState.sentences = { ar: [], id: [] };
 
+                ['outputOriginal', 'outputTranslated', 'readAr', 'readId'].forEach(id => {
+                    document.getElementById(id).innerHTML = '';
+                    document.getElementById(id).classList.remove('opacity-100');
+                    document.getElementById(id).classList.add('opacity-70');
+                });
+
+                stopSpeech();
+                showToast("Kanvas dibersihkan");
+            }
+        }
+
+        function changeFontSize(delta) {
+            fontScale = Math.max(0.7, Math.min(2.0, fontScale + delta));
+            document.documentElement.style.setProperty('--font-scale', fontScale);
+        }
+
+        function toggleDarkMode() {
+            appState.isDark = !appState.isDark;
+            document.body.classList.toggle('dark', appState.isDark);
+            localStorage.setItem('dark_mode', appState.isDark);
             lucide.createIcons();
         }
 
-        function adjustRate(delta) {
-            let newRate = appState.rate + delta;
-            if (newRate < 0.5) newRate = 0.5;
-            if (newRate > 2.5) newRate = 2.5;
+        function openPanel(id) {
+            const bd = document.getElementById('backdrop');
+            const panel = document.getElementById(id);
+            bd.classList.remove('hidden');
+            panel.classList.remove('hidden');
 
-            appState.rate = parseFloat(newRate.toFixed(1));
-            document.getElementById('speedDisplay').innerText = appState.rate.toFixed(1) + 'x';
-            document.getElementById('rate').value = appState.rate;
-            document.getElementById('vRate').innerText = appState.rate.toFixed(1);
-            localStorage.setItem('tts_rate', appState.rate);
+            // Trigger reflow for animation
+            void bd.offsetWidth;
+            bd.classList.add('backdrop-enter-active');
+            panel.classList.add('modal-enter-active');
+        }
 
-            if (synth.speaking) {
-                const wasPaused = synth.paused;
-                synth.cancel();
-                if (!wasPaused) toggleSpeech();
+        function closeAllPanels() {
+            const bd = document.getElementById('backdrop');
+            bd.classList.remove('backdrop-enter-active');
+
+            ['settingsPanel', 'historyPanel', 'errorPopup'].forEach(id => {
+                const panel = document.getElementById(id);
+                panel.classList.remove('modal-enter-active');
+            });
+
+            setTimeout(() => {
+                bd.classList.add('hidden');
+                ['settingsPanel', 'historyPanel', 'errorPopup'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+            }, 300); // match transition duration
+        }
+
+        function toggleCollapse(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('is-collapsed');
+            const icon = document.getElementById(`icon-${id}`);
+            icon.style.transform = el.classList.contains('is-collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
+        }
+
+        function toggleReadingMode() {
+            const ov = document.getElementById('readingOverlay');
+            ov.classList.toggle('hidden');
+            if (!ov.classList.contains('hidden')) {
+                fontScale = 1.0;
+                document.documentElement.style.setProperty('--font-scale', fontScale);
             }
         }
 
+        function saveSettings() {
+            appState.key = document.getElementById('apiKeyInput').value.trim();
+            appState.pitch = parseFloat(document.getElementById('pitchSlider').value);
+            appState.voiceArURI = document.getElementById('voiceArSelect').value;
+            appState.voiceIdURI = document.getElementById('voiceIdSelect').value;
+
+            localStorage.setItem('access_key', appState.key);
+            localStorage.setItem('tts_pitch', appState.pitch);
+            localStorage.setItem('tts_voice_ar', appState.voiceArURI);
+            localStorage.setItem('tts_voice_id', appState.voiceIdURI);
+
+            closeAllPanels();
+            showToast("Konfigurasi tersimpan!");
+
+            // Reload voices instantly if speaking
+            if (synth.speaking) stopSpeech();
+        }
+
         async function handleTranslate() {
-            const text = document.getElementById('inputText').value;
-            if (!text) return showToast("Naskah kosong");
+            const text = document.getElementById('inputText').value.trim();
+            if (!text) return showToast("Masukkan teks Arab terlebih dahulu");
             if (!appState.key) return openPanel('settingsPanel');
+
+            const model = document.getElementById('modelSelect').value;
+            localStorage.setItem('gemini_model', model);
 
             const btn = document.getElementById('translateBtn');
             btn.disabled = true;
-            btn.innerHTML = "Memproses...";
+            btn.innerHTML = `<span class="animate-pulse flex items-center gap-2"><span class="spinner-mini"></span> Memproses AI...</span>`;
 
             const sys = `Terjemahkan teks berikut ke Bahasa Indonesia secara lengkap, secara menyeluruh.
             Aturan output:
@@ -462,150 +786,267 @@
             - Jangan tambahkan penjelasan apapun
             Output hanya teks final.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${appState.key}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${appState.key}`;
 
             try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `${sys}\n\nTEKS:\n${text}` }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `${sys}\n\nNASKAH:\n${text}` }] }] })
                 });
-
                 const data = await response.json();
+
                 if (data.error) throw new Error(data.error.message);
 
                 const result = data.candidates[0].content.parts[0].text;
                 processOutput(text, result);
-
                 saveToHistory(text, result);
-                document.getElementById('editorSection').classList.add('is-collapsed');
-                showToast("Terjemahan selesai");
+
+                // Auto collapse
+                const editor = document.getElementById('editorSection');
+                if (!editor.classList.contains('is-collapsed')) toggleCollapse('editorSection');
+
+                // Ensure output is expanded
+                const translated = document.getElementById('translatedSection');
+                if (translated.classList.contains('is-collapsed')) toggleCollapse('translatedSection');
+
+                showToast("Terjemahan sukses!");
             } catch (e) {
-                showToast("Gagal terhubung ke layanan");
+                document.getElementById('errorMsg').innerText = e.message;
+                openPanel('errorPopup');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="sparkles"></i> Terjemahkan`;
+                btn.innerHTML = `<i data-lucide="sparkles" class="w-5 h-5"></i> Terjemahkan Naskah`;
                 lucide.createIcons();
             }
         }
 
-        function processOutput(ar, id) {
-            appState.sentences.ar = ar.split(/[.!?\r\n]+/).filter(s => s.trim().length > 0);
-            appState.sentences.id = id.split(/[.!?\r\n]+/).filter(s => s.trim().length > 0);
-
-            renderPage(document.getElementById('outputOriginal'), appState.sentences.ar, 'ar');
-            renderPage(document.getElementById('outputTranslated'), appState.sentences.id, 'id');
-            renderPage(document.getElementById('readAr'), appState.sentences.ar, 'ar');
-            renderPage(document.getElementById('readId'), appState.sentences.id, 'id');
-        }
-
-        function renderPage(container, sentences, type) {
-            container.innerHTML = sentences.map((s, i) =>
-                `<span class="sentence" id="s-${type}-${i}" onclick="syncFocus(${i})">${s}. </span>`
-            ).join("");
-        }
-
-        function syncFocusByChar(charIdx) {
-            let total = 0;
-            let idx = 0;
-            for (let i = 0; i < appState.sentences.id.length; i++) {
-                total += appState.sentences.id[i].length + 2;
-                if (charIdx < total) { idx = i; break; }
+        function renderContent(containerId, data, langType) {
+            const el = document.getElementById(containerId);
+            if (!data.length) {
+                el.innerHTML = langType === 'ar' ? 'Naskah asli...' : 'Terjemahan...';
+                el.classList.remove('opacity-100');
+                el.classList.add('opacity-70');
+                el.classList.remove('fade-in-text');
+                return;
             }
-            syncFocus(idx);
+
+            const html = data.map((val, idx) =>
+                `<span class="sentence" id="s-${langType}-${idx}">${val}</span>`
+            ).join("");
+
+            el.innerHTML = html;
+            el.classList.remove('opacity-70');
+            el.classList.add('opacity-100');
+
+            // Re-trigger animation
+            el.classList.remove('fade-in-text');
+            void el.offsetWidth;
+            el.classList.add('fade-in-text');
         }
 
-        function syncFocus(idx) {
-            clearFocus();
-            const els = document.querySelectorAll(`[id$="-${idx}"]`);
-            els.forEach(el => {
-                el.classList.add('highlight-active');
-                if (document.getElementById('readingOverlay').offsetParent !== null) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        function processOutput(ar, id) {
+            const segmentText = (t) => {
+                const res = []; let cur = "";
+                for (let c of t) {
+                    cur += c;
+                    if (".!?\n".includes(c)) { res.push(cur); cur = ""; }
                 }
-            });
+                if (cur) res.push(cur);
+                return res;
+            };
+
+            appState.sentences.ar = segmentText(ar);
+            appState.sentences.id = segmentText(id);
+
+            renderContent('outputOriginal', appState.sentences.ar, 'ar');
+            renderContent('outputTranslated', appState.sentences.id, 'id');
+            renderContent('readAr', appState.sentences.ar, 'ar');
+            renderContent('readId', appState.sentences.id, 'id');
         }
 
-        function clearFocus() {
-            document.querySelectorAll('.sentence').forEach(s => s.classList.remove('highlight-active'));
+        // --- PREMIUM TTS ENGINE ---
+        function toggleSpeech(lang) {
+            if (synth.paused && activeLang === lang) {
+                synth.resume();
+                updatePlayIcons(lang, true);
+                return;
+            }
+            if (synth.speaking && activeLang === lang) {
+                stopSpeech();
+                return;
+            }
+
+            stopSpeech();
+            activeLang = lang;
+            const fullText = appState.sentences[lang].join("");
+            if (!fullText) return showToast("Tidak ada teks!");
+
+            // Tampilkan Indikator Loading
+            document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'flex';
+            document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.add('opacity-50');
+
+            synth.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(fullText);
+
+            // Set Language fallback
+            utterance.lang = lang === 'ar' ? 'ar-SA' : 'id-ID';
+
+            // Apply Custom Voice if selected
+            const targetURI = lang === 'ar' ? appState.voiceArURI : appState.voiceIdURI;
+            if (targetURI && availableVoices.length > 0) {
+                const selectedVoice = availableVoices.find(v => v.voiceURI === targetURI);
+                if (selectedVoice) utterance.voice = selectedVoice;
+            }
+
+            // Apply Pitch & Rate
+            utterance.rate = lang === 'ar' ? appState.rateAr : appState.rateId;
+            utterance.pitch = appState.pitch;
+
+            utterance.onboundary = (e) => {
+                if (e.name === 'word' || e.name === 'sentence') {
+                    syncHighlight(lang, e.charIndex);
+                }
+            };
+
+            utterance.onstart = () => {
+                // Sembunyikan Loading
+                document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'none';
+                document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.remove('opacity-50');
+                updatePlayIcons(lang, true);
+            };
+
+            utterance.onend = () => stopSpeech();
+            utterance.onerror = () => stopSpeech();
+
+            // Mobile Hack
+            setTimeout(() => {
+                synth.speak(utterance);
+
+                // Fallback for missing onstart event in some mobiles
+                setTimeout(() => {
+                    if (synth.speaking) {
+                        document.getElementById(`loading${lang === 'ar' ? 'Ar' : 'Id'}`).style.display = 'none';
+                        document.getElementById(`playIcon${lang === 'ar' ? 'Ar' : 'Id'}`).parentElement.classList.remove('opacity-50');
+                        updatePlayIcons(lang, true);
+                    }
+                }, 500);
+            }, 100);
+        }
+
+        function syncHighlight(lang, charIndex) {
+            let total = 0, targetIdx = 0;
+            const sens = appState.sentences[lang];
+            for (let i = 0; i < sens.length; i++) {
+                total += sens[i].length;
+                if (charIndex < total) {
+                    targetIdx = i;
+                    break;
+                }
+            }
+
+            document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight-active'));
+            const activeEls = document.querySelectorAll(`[id$="-${targetIdx}"]`);
+            activeEls.forEach(el => el.classList.add('highlight-active'));
+
+            if (activeEls[0]) {
+                activeEls[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function pauseSpeech() {
+            if (synth.speaking) {
+                if (synth.paused) {
+                    synth.resume();
+                    updatePlayIcons(activeLang, true);
+                } else {
+                    synth.pause();
+                    updatePlayIcons(activeLang, false);
+                }
+            }
+        }
+
+        function stopSpeech() {
+            synth.cancel();
+            document.querySelectorAll('.tts-loading-badge').forEach(el => el.style.display = 'none');
+
+            const btnAr = document.getElementById('playIconAr');
+            const btnId = document.getElementById('playIconId');
+            if (btnAr) btnAr.parentElement.classList.remove('opacity-50');
+            if (btnId) btnId.parentElement.classList.remove('opacity-50');
+
+            updatePlayIcons('ar', false);
+            updatePlayIcons('id', false);
+            document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight-active'));
+            activeLang = null;
+        }
+
+        function adjustRate(lang, delta) {
+            const key = lang === 'ar' ? 'rateAr' : 'rateId';
+            appState[key] = Math.min(2.0, Math.max(0.5, appState[key] + delta));
+            document.getElementById(`speedDisplay${lang === 'ar' ? 'Ar' : 'Id'}`).innerText = appState[key].toFixed(1) + 'x';
+            localStorage.setItem(`tts_rate_${lang}`, appState[key]);
+
+            if (synth.speaking && activeLang === lang) {
+                stopSpeech();
+                toggleSpeech(lang);
+            }
+        }
+
+        function updatePlayIcons(lang, isPlaying) {
+            const suffix = lang === 'ar' ? 'Ar' : 'Id';
+            const icon = document.getElementById(`playIcon${suffix}`);
+            const label = document.getElementById(`playLabel${suffix}`);
+            if (icon) icon.setAttribute('data-lucide', isPlaying ? 'square' : 'play');
+            if (label) label.innerText = isPlaying ? 'Stop' : 'Dengar';
+            lucide.createIcons();
+        }
+
+        // --- HISTORY ---
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (appState.history.length === 0) {
+                list.innerHTML = `<div class="text-center opacity-50 py-10"><i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2"></i><p class="text-sm font-semibold">Belum ada riwayat.</p></div>`;
+                lucide.createIcons();
+                return;
+            }
+            list.innerHTML = appState.history.map((item, i) => `
+                <div onclick="loadHistory(${i})" class="p-4 bg-gray-50 dark:bg-slate-800 border border-[var(--spine)] rounded-2xl cursor-pointer hover:border-[#059669] hover:shadow-md active:scale-[0.98] transition-all">
+                    <p class="arabic-text text-[13px] line-clamp-1 opacity-90 mb-1.5" dir="rtl">${item.ar}</p>
+                    <p class="text-[11px] line-clamp-2 italic opacity-80">${item.id}</p>
+                </div>
+            `).join("");
         }
 
         function saveToHistory(ar, id) {
-            const newItem = { ar, id, date: new Date().toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) };
-            appState.history.unshift(newItem);
+            if (appState.history.length > 0 && appState.history[0].ar === ar) return;
+            appState.history.unshift({ ar, id });
             if (appState.history.length > 20) appState.history.pop();
             localStorage.setItem('trans_history', JSON.stringify(appState.history));
             renderHistory();
         }
 
-        function renderHistory() {
-            const list = document.getElementById('historyList');
-            if (appState.history.length === 0) {
-                list.innerHTML = `<p class="text-center opacity-40 py-10 text-sm">Belum ada riwayat</p>`;
-                return;
-            }
-            list.innerHTML = appState.history.map((item, index) => `
-                <div onclick="loadHistory(${index})" class="p-3 border border-[var(--spine)] rounded-xl cursor-pointer hover:bg-[#059669]/5 transition-colors group">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-[10px] opacity-50 font-mono">${item.date}</span>
-                        <i data-lucide="chevron-right" class="w-3 h-3 opacity-0 group-hover:opacity-100"></i>
-                    </div>
-                    <p class="arabic-text text-sm line-clamp-1 opacity-70 mb-1" dir="rtl">${item.ar.substring(0, 50)}...</p>
-                    <p class="text-xs line-clamp-1 italic">${item.id.substring(0, 60)}...</p>
-                </div>
-            `).join("");
-            lucide.createIcons();
-        }
-
-        function loadHistory(index) {
-            const item = appState.history[index];
+        function loadHistory(i) {
+            const item = appState.history[i];
             document.getElementById('inputText').value = item.ar;
             processOutput(item.ar, item.id);
             closeAllPanels();
-            showToast("Naskah dimuat");
-            document.getElementById('originalSection').classList.remove('is-collapsed');
-            document.getElementById('translatedSection').classList.remove('is-collapsed');
+
+            const editor = document.getElementById('editorSection');
+            if (!editor.classList.contains('is-collapsed')) toggleCollapse('editorSection');
+
+            showToast("Naskah dimuat dari riwayat");
         }
 
         function clearHistory() {
-            appState.history = [];
-            localStorage.removeItem('trans_history');
-            renderHistory();
-            showToast("Riwayat dihapus");
+            if (confirm("Hapus seluruh riwayat permanen?")) {
+                appState.history = [];
+                localStorage.removeItem('trans_history');
+                renderHistory();
+                closeAllPanels();
+            }
         }
-
-        function toggleDarkMode() {
-            appState.isDark = !appState.isDark;
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('dark_mode', appState.isDark);
-            document.getElementById('themeIcon').setAttribute('data-lucide', appState.isDark ? 'sun' : 'moon');
-            lucide.createIcons();
-        }
-
-        function toggleReadingMode() {
-            const overlay = document.getElementById('readingOverlay');
-            const isShown = overlay.style.display === 'flex';
-            overlay.style.display = isShown ? 'none' : 'flex';
-            document.body.style.overflow = isShown ? 'auto' : 'hidden';
-        }
-
-        function saveSettings() {
-            appState.key = document.getElementById('apiKeyInput').value;
-            localStorage.setItem('access_key', appState.key);
-            closeAllPanels();
-            showToast("Kunci akses disimpan");
-        }
-
-        function showToast(m) {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerText = m;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-
-        document.getElementById('pitch').oninput = (e) => document.getElementById('vPitch').innerText = e.target.value;
-        document.getElementById('rate').oninput = (e) => document.getElementById('vRate').innerText = e.target.value;
     </script>
 </body>
 
